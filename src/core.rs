@@ -15,22 +15,22 @@ use sfml::{
 use crate::theming::Theme;
 
 /// UI's root. All `Widget`s are stored here.
-pub struct Root<'f> {
-    widgets: Vec<Widget<'f>>,
+pub struct Root {
+    widgets: Vec<Widget>,
 }
 
-impl<'f> Root<'f> {
-    pub fn new() -> Root<'f> {
+impl Root {
+    pub fn new() -> Root {
         let widgets = Vec::new();
         Root { widgets }
     }
 
-    pub fn add_widget(&mut self, w: Widget<'f>) {
+    pub fn add_widget(&mut self, w: Widget) {
         self.widgets.push(w);
     }
 }
 
-impl<'f> Drawable for Root<'f> {
+impl Drawable for Root {
     fn draw<'a: 's, 't, 's, 's_t>(
         &'a self,
         target: &mut dyn RenderTarget,
@@ -42,15 +42,15 @@ impl<'f> Drawable for Root<'f> {
     }
 }
 
-pub trait WidgetTrait<'f> {
+pub trait WidgetTrait {
     fn wdraw<'a: 's, 't, 's, 's_t>(
         &'a self,
         target: &mut dyn RenderTarget,
         states: RenderStates<'t, 's, 's_t>,
     );
-    fn wbind(&mut self, theme: &'f mut dyn Theme);
+    fn wbind(&mut self, theme: &mut dyn Theme);
     fn process_event(&mut self, rel_pos: Vector2f, event: &Event) -> bool;
-    fn set_theme(&mut self, theme: &'f mut dyn Theme);
+    fn set_theme(&mut self, theme: &mut dyn Theme);
 }
 
 #[derive(Clone, Copy)]
@@ -179,16 +179,16 @@ impl From<((f32, f32), (f32, f32))> for TransformRect {
 }
 
 #[derive(Clone)]
-pub struct Widget<'f> {
-    pub widget: Rc<RefCell<dyn WidgetTrait<'f>>>,
+pub struct Widget {
+    pub widget: Rc<RefCell<dyn WidgetTrait>>,
     pub tsf_rc: TransformRect,
 }
 
-impl<'f> Widget<'f> {
-    pub fn new<W: WidgetTrait<'f> + 'static, R: Into<TransformRect>>(
+impl Widget {
+    pub fn new<W: WidgetTrait + 'static, R: Into<TransformRect>>(
         mut widget: W,
         tsf_rc: R,
-        theme: &'f mut dyn Theme
+        theme: &mut dyn Theme
     ) -> Widget
     {
         widget.wbind(theme);
@@ -198,7 +198,7 @@ impl<'f> Widget<'f> {
     }
 }
 
-impl<'f> Drawable for Widget<'f> {
+impl Drawable for Widget {
     fn draw<'a: 's, 't, 's, 's_t>(
         &'a self,
         target: &mut dyn RenderTarget,
@@ -209,10 +209,10 @@ impl<'f> Drawable for Widget<'f> {
     }
 }
 
-pub trait ContainerTrait<'f>: WidgetTrait<'f> {
-    fn add_widget(&mut self, widget: Widget<'f>);
-    fn get_children(&self) -> &Vec<Widget<'f>>;
-    fn get_children_mut(&mut self) -> &mut Vec<Widget<'f>>;
+pub trait ContainerTrait: WidgetTrait {
+    fn add_widget(&mut self, widget: Widget);
+    fn get_children(&self) -> &Vec<Widget>;
+    fn get_children_mut(&mut self) -> &mut Vec<Widget>;
     fn draw_children<'a: 's, 't, 's, 's_t>(
         &'a self,
         target: &mut dyn RenderTarget,

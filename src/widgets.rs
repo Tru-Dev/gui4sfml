@@ -29,7 +29,7 @@ impl<'f> Label<'f> {
     }
 }
 
-impl<'f> WidgetTrait<'f> for Label<'f> {
+impl<'f> WidgetTrait for Label<'f> {
     fn wdraw<'a: 's, 't, 's, 's_t>(
         &'a self,
         target: &mut dyn RenderTarget,
