@@ -1,16 +1,19 @@
 
 use sfml::graphics::{
-    RenderWindow, Color, RenderTarget, VertexArray, PrimitiveType, Vertex
+    RenderWindow, Color, RenderTarget, VertexArray, PrimitiveType, Vertex,
+    Text, RenderStates
 };
 use sfml::window::{Style, Event, Key};
 
 use ::gui4sfml::{Root, Widget, DefaultTheme, Label, };
+use ::gui4sfml::theming::Theme;
+use ::gui4sfml::core::WidgetTrait;
 
 fn main() {
     let mut root = Root::new();
-    let theme = DefaultTheme;
+    let mut theme = DefaultTheme::new();
 
-    let l = Widget::new(Label::new("Hello!", 80), (400., 300.), &theme);
+    let l = Widget::new(Label::new("Hello!", 80), (0., 0.), &mut theme);
 
     root.add_widget(l);
 
@@ -39,7 +42,9 @@ fn main() {
 
         rwin.clear(Color::BLACK);
         rwin.draw(&root);
+        // rwin.draw(&txt);
         // rwin.draw(&varr);
+
         rwin.display();
     }
 }

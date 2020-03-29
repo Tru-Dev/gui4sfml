@@ -4,7 +4,7 @@ pub extern crate sfml;
 pub mod macros;
 pub mod core;
 pub mod widgets;
-pub mod texman;
+pub mod resman;
 pub mod theming;
 pub mod hsv;
 

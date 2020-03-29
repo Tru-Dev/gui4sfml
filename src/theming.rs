@@ -3,6 +3,8 @@
 use sfml::graphics::{Color, TextStyle, Font};
 use sfml::system::SfBox;
 
+use crate::resman::ResourceManager;
+
 pub fn get_default_font() -> SfBox<Font> {
     Font::from_memory(
         include_bytes!("../assets/font/TitilliumWeb-Light.ttf")
@@ -12,6 +14,8 @@ pub fn get_default_font() -> SfBox<Font> {
 /// The Theme trait. For implementations, look at the `themes` or
 /// `macros` modules.
 pub trait Theme {
+    fn get_resman(&mut self) -> &mut ResourceManager;
+
     fn get_pallete_for(&self, widget: &str) -> [Color; 8] {
         [
             Color::rgb(159, 159, 159),
@@ -33,10 +37,27 @@ pub trait Theme {
         TextStyle::REGULAR
     }
 
-    fn get_font_for(&self, widget: &str) -> SfBox<Font> {
-        get_default_font()
+    fn get_font_for(&mut self, widget: &str) -> &SfBox<Font> {
+        if !self.get_resman().has_font("default") {
+            self.get_resman().set_from_font("default", &get_default_font());
+        }
+        self.get_resman().fntget("default")
     }
 }
 
 /// The default theme. Not much to look at.
-pub struct DefaultTheme; impl Theme for DefaultTheme {}
+pub struct DefaultTheme {
+    resman: ResourceManager
+}
+
+impl DefaultTheme {
+    pub fn new() -> DefaultTheme {
+        DefaultTheme { resman: ResourceManager::new() }
+    }
+}
+
+impl Theme for DefaultTheme {
+    fn get_resman(&mut self) -> &mut ResourceManager {
+        &mut self.resman
+    }
+}

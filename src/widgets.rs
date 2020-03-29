@@ -9,13 +9,12 @@ use sfml::window::Event;
 #[macro_use]
 use crate::macros;
 use crate::core::{WidgetTrait};
-use crate::theming::{Theme, get_default_font};
+use crate::theming::{Theme, self};
 
 /// A simple text label that can have a background.
 pub struct Label<'f> {
     bg: Color,
-    text: Text<'f>,
-    font: SfBox<Font>,
+    pub text: Text<'f>,
 }
 
 impl<'f> Label<'f> {
@@ -26,12 +25,11 @@ impl<'f> Label<'f> {
         Label {
             bg: Color::TRANSPARENT,
             text: t,
-            font: get_default_font(),
         }
     }
 }
 
-impl<'f> WidgetTrait for Label<'f> {
+impl<'f> WidgetTrait<'f> for Label<'f> {
     fn wdraw<'a: 's, 't, 's, 's_t>(
         &'a self,
         target: &mut dyn RenderTarget,
@@ -44,8 +42,8 @@ impl<'f> WidgetTrait for Label<'f> {
         target.draw_with_renderstates(&self.text, states);
     }
 
-    fn wbind(&mut self, theme: &dyn Theme) {
-        self.font = theme.get_font_for("Label");
+    fn wbind(&mut self, theme: &'f mut dyn Theme) {
+        self.text.set_font(theme.get_font_for("Label"));
         self.text.set_fill_color(
             // theme.get_pallete_color_for("Label", pallete_map!(fg))
             Color::WHITE
@@ -58,7 +56,7 @@ impl<'f> WidgetTrait for Label<'f> {
     fn process_event(&mut self, rel_pos: Vector2f, event: &Event) -> bool
     {false}
 
-    fn set_theme(&mut self, theme: &dyn Theme) {
+    fn set_theme(&mut self, theme: &'f mut dyn Theme) {
 
     }
 }
